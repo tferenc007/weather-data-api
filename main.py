@@ -9,11 +9,13 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/api/v1/<word>")
-def about(word):
-    df = pd.read_csv("data/dictionary.csv", sep=',')
+@app.route("/api/v1/<station>/<date>")
+def about(station, date):
+    file_name = "data/TG_STAID"+ str(station).zfill(6) + ".txt"
+    df = pd.read_csv(file_name, skiprows=20, parse_dates=['    DATE'])
+    temperature = df.loc[df['    DATE']==date]["   TG"].squeeze()/10
 
-    definition = df.loc[df['word']==word]["definition"].squeeze()
-    return {"definition": definition, "word": word}
+    return {"station": station, "date": date, "temperature": temperature }
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
